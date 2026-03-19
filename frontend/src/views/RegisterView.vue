@@ -38,7 +38,6 @@
           placeholder="CEP"
           maxlength="9"
           @blur="handleCepBlur"
-          required
         />
 
         <input
@@ -71,7 +70,9 @@
           />
         </div>
 
-        <button type="submit">Cadastrar</button>
+        <button type="submit" :disabled="loading">
+          {{ loading ? 'Cadastrando...' : 'Cadastrar' }}
+        </button>
       </form>
 
       <p v-if="error" class="error">{{ error }}</p>
@@ -92,6 +93,10 @@ import api from '../services/api'
 
 const router = useRouter()
 
+const loading = ref(false)
+const error = ref('')
+const success = ref('')
+
 const form = ref({
   name: '',
   email: '',
@@ -104,12 +109,8 @@ const form = ref({
   state: ''
 })
 
-const error = ref('')
-const success = ref('')
-
 function formatCep(value: string) {
   const numbers = value.replace(/\D/g, '').slice(0, 8)
-
   if (numbers.length <= 5) return numbers
   return `${numbers.slice(0, 5)}-${numbers.slice(5)}`
 }
@@ -119,6 +120,7 @@ async function handleCepBlur() {
     error.value = ''
 
     const cleanCep = form.value.cep.replace(/\D/g, '')
+    if (!cleanCep) return
 
     if (cleanCep.length !== 8) {
       throw new Error('Digite um CEP válido com 8 números')
@@ -142,6 +144,7 @@ async function handleCepBlur() {
 
 async function handleRegister() {
   try {
+    loading.value = true
     error.value = ''
     success.value = ''
 
@@ -159,6 +162,9 @@ async function handleRegister() {
     }, 1200)
   } catch (err: any) {
     error.value = err.message || 'Erro ao cadastrar'
+    console.error('Erro no cadastro:', err)
+  } finally {
+    loading.value = false
   }
 }
 </script>
@@ -208,21 +214,19 @@ async function handleRegister() {
 }
 
 input,
-select {
+select,
+button {
   width: 100%;
+  box-sizing: border-box;
+}
+
+input,
+select {
   padding: 12px 14px;
   border: 1px solid #cbd5e1;
   border-radius: 12px;
   font-size: 15px;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-sizing: border-box;
-}
-
-input:focus,
-select:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
 }
 
 input[readonly] {
@@ -240,12 +244,11 @@ button {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-button:hover {
-  transform: translateY(-1px);
-  opacity: 0.95;
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .error {
@@ -276,10 +279,6 @@ button:hover {
   color: #4f46e5;
   font-weight: 700;
   text-decoration: none;
-}
-
-.login-link a:hover {
-  text-decoration: underline;
 }
 
 @media (max-width: 520px) {
