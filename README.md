@@ -1,5 +1,48 @@
-# Vue 3 + TypeScript + Vite
+# 🏥 Sistema de Atendimento Inteligente para Clínicas Médicas
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 📌 Descrição
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+Este projeto é uma aplicação web desenvolvida para auxiliar clínicas médicas no gerenciamento de agendamentos de consultas.
+
+O sistema permite cadastro e login de usuários, agendamento de consultas com validação de horários, integração com API de CEP para preenchimento automático de endereço, verificação de previsão do tempo e um painel administrativo para gerenciamento dos atendimentos.
+
+---
+
+## 🚀 Tecnologias Utilizadas
+
+### Frontend
+- Vue.js 3
+- TypeScript
+- Vite
+
+### Backend
+- Node.js
+- Express
+
+### Banco de Dados
+- SQLite
+
+### Autenticação
+- JWT (JSON Web Token)
+
+### APIs Externas
+- ViaCEP (consulta de endereço por CEP)
+- OpenWeather (previsão do tempo)
+
+---
+
+## ⚙️ Funcionalidades
+
+- 👤 Cadastro de usuários (paciente, secretário e administrador)
+- 🔐 Login com autenticação JWT
+- 📅 Agendamento de consultas
+- ⛔ Validação de horário duplicado
+- 📍 Preenchimento automático de endereço por CEP
+- 🌧️ Alerta de previsão de chuva no dia da consulta
+- 📊 Painel administrativo com listagem de agendamentos
+- 🗑️ Exclusão de agendamentos pelo administrador
+- 🚪 Logout de usuário
+
+---
+
+## 🧩 Estrutura do Projeto
