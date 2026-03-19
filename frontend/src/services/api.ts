@@ -1,37 +1,24 @@
-const API_URL = 'https://clinica-backend.onrender.com'
+import axios from 'axios'
 
-async function request(endpoint: string, options: any = {}) {
+const api = axios.create({
+  baseURL: 'https://clinica-backend-gbtg.onrender.com'
+})
+
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
 
-  const headers: any = {
-    'Content-Type': 'application/json',
-    ...options.headers
-  }
-
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`
+    config.headers = config.headers || {}
+    config.headers.Authorization = `Bearer ${token}`
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers
-  })
-
-  const data = await response.json()
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Erro na requisição')
-  }
-
-  return data
-}
+  return config
+})
 
 export default {
   async login(data: { email: string; password: string }) {
-    return request('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
+    const response = await api.post('/auth/login', data)
+    return response.data
   },
 
   async register(data: {
@@ -40,14 +27,13 @@ export default {
     password: string
     role: string
   }) {
-    return request('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
+    const response = await api.post('/auth/register', data)
+    return response.data
   },
 
   async getAppointments() {
-    return request('/appointments')
+    const response = await api.get('/appointments')
+    return response.data
   },
 
   async createAppointment(data: {
@@ -55,16 +41,13 @@ export default {
     time: string
     description: string
   }) {
-    return request('/appointments', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
+    const response = await api.post('/appointments', data)
+    return response.data
   },
 
   async deleteAppointment(id: number) {
-    return request(`/appointments/${id}`, {
-      method: 'DELETE'
-    })
+    const response = await api.delete(`/appointments/${id}`)
+    return response.data
   },
 
   async getAddressByCep(cep: string) {
