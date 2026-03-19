@@ -46,3 +46,10 @@ O sistema permite cadastro e login de usuários, agendamento de consultas com va
 ---
 
 ## 🧩 Estrutura do Projeto
+## 🔗 Acesso ao sistema
+
+Frontend:
+https://clinica-frontend.vercel.app
+
+Backend:
+https://clinica-backend.onrender.com
