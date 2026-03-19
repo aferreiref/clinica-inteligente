@@ -27,39 +27,60 @@ async function request(endpoint: string, options: any = {}) {
 }
 
 export default {
-  // 🔐 LOGIN
-  async login(email: string, password: string) {
+  async login(data: { email: string; password: string }) {
     return request('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify(data)
     })
   },
 
-  // 📝 REGISTER
-  async register(user: any) {
+  async register(data: {
+    name: string
+    email: string
+    password: string
+    role: string
+  }) {
     return request('/auth/register', {
       method: 'POST',
-      body: JSON.stringify(user)
+      body: JSON.stringify(data)
     })
   },
 
-  // 📅 LISTAR AGENDAMENTOS
   async getAppointments() {
     return request('/appointments')
   },
 
-  // ➕ CRIAR AGENDAMENTO
-  async createAppointment(data: any) {
+  async createAppointment(data: {
+    date: string
+    time: string
+    description: string
+  }) {
     return request('/appointments', {
       method: 'POST',
       body: JSON.stringify(data)
     })
   },
 
-  // ❌ DELETAR AGENDAMENTO
   async deleteAppointment(id: number) {
     return request(`/appointments/${id}`, {
       method: 'DELETE'
     })
+  },
+
+  async getAddressByCep(cep: string) {
+    const cleanCep = cep.replace(/\D/g, '')
+
+    if (cleanCep.length !== 8) {
+      throw new Error('Digite um CEP válido com 8 números')
+    }
+
+    const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+    const data = await response.json()
+
+    if (data.erro) {
+      throw new Error('CEP não encontrado')
+    }
+
+    return data
   }
 }

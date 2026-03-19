@@ -10,5 +10,13 @@
         "**/*.code-search": false,
         "**/bower_components": false,
         "**/node_modules": false
-    }
+    },
+    "files.exclude": {
+        "**/.DS_Store": false,
+        "**/.git": false,
+        "**/.hg": false,
+        "**/.svn": false,
+        "**/Thumbs.db": false
+    },
+    "search.useIgnoreFiles": true
 }
