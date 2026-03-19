@@ -1,117 +1,65 @@
-const API_URL = 'https://clinica-backend-gbtr.onrender.com'
+const API_URL = 'https://clinica-backend.onrender.com'
 
-type LoginData = {
-  email: string
-  password: string
-}
+async function request(endpoint: string, options: any = {}) {
+  const token = localStorage.getItem('token')
 
-type RegisterData = {
-  name: string
-  email: string
-  password: string
-  role: string
-}
-
-type AppointmentData = {
-  date: string
-  time: string
-  description: string
-}
-
-function getToken() {
-  return localStorage.getItem('token')
-}
-
-async function handleResponse(response: Response) {
-  const result = await response.json()
-
-  if (!response.ok) {
-    throw new Error(result.message || 'Ocorreu um erro na requisição')
+  const headers: any = {
+    'Content-Type': 'application/json',
+    ...options.headers
   }
 
-  return result
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Erro na requisição')
+  }
+
+  return data
 }
 
 export default {
-  async login(data: LoginData) {
-    const response = await fetch(`${API_URL}/auth/login`, {
+  // 🔐 LOGIN
+  async login(email: string, password: string) {
+    return request('/auth/login', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ email, password })
     })
-
-    return handleResponse(response)
   },
 
-  async register(data: RegisterData) {
-    const response = await fetch(`${API_URL}/auth/register`, {
+  // 📝 REGISTER
+  async register(user: any) {
+    return request('/auth/register', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+      body: JSON.stringify(user)
     })
-
-    return handleResponse(response)
   },
 
-  async createAppointment(data: AppointmentData) {
-    const token = getToken()
-
-    const response = await fetch(`${API_URL}/appointments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(data)
-    })
-
-    return handleResponse(response)
-  },
-
+  // 📅 LISTAR AGENDAMENTOS
   async getAppointments() {
-    const token = getToken()
-
-    const response = await fetch(`${API_URL}/appointments`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    return handleResponse(response)
+    return request('/appointments')
   },
 
+  // ➕ CRIAR AGENDAMENTO
+  async createAppointment(data: any) {
+    return request('/appointments', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  },
+
+  // ❌ DELETAR AGENDAMENTO
   async deleteAppointment(id: number) {
-    const token = getToken()
-
-    const response = await fetch(`${API_URL}/appointments/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+    return request(`/appointments/${id}`, {
+      method: 'DELETE'
     })
-
-    return handleResponse(response)
-  },
-
-  async getAddressByCep(cep: string) {
-    const cleanCep = cep.replace(/\D/g, '')
-
-    if (cleanCep.length !== 8) {
-      throw new Error('Digite um CEP válido com 8 números')
-    }
-
-    const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
-    const data = await response.json()
-
-    if (data.erro) {
-      throw new Error('CEP não encontrado')
-    }
-
-    return data
   }
 }
