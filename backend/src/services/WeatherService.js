@@ -1,18 +1,38 @@
 const axios = require('axios')
 
+/**
+ * Busca previsão do tempo usando OpenWeatherMap
+ * @param {string} city - Nome da cidade (ex: "Sao Paulo")
+ */
 async function getWeatherForecast(city) {
-  const apiKey = process.env.OPENWEATHER_API_KEY
+  try {
+    const apiKey = process.env.OPENWEATHER_API_KEY
 
-  const response = await axios.get('https://api.openweathermap.org/data/2.5/forecast', {
-    params: {
-      q: city,
-      appid: apiKey,
-      units: 'metric',
-      lang: 'pt_br'
+    if (!apiKey) {
+      throw new Error('API KEY do OpenWeather não configurada')
     }
-  })
 
-  return response.data
+    const response = await axios.get(
+      'https://api.openweathermap.org/data/2.5/forecast',
+      {
+        params: {
+          q: city,
+          appid: apiKey,
+          units: 'metric',
+          lang: 'pt_br'
+        }
+      }
+    )
+
+    return response.data
+  } catch (error) {
+    console.error('Erro ao buscar previsão do tempo:', error.message)
+
+    // Retorna estrutura segura pra não quebrar o sistema
+    return {
+      list: []
+    }
+  }
 }
 
 module.exports = {

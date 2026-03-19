@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+
 const db = require('../db')
 const authMiddleware = require('../middleware/authMiddleware')
 const { getWeatherForecast } = require('../services/weatherService')
@@ -56,20 +57,24 @@ router.post('/', authMiddleware, (req, res) => {
       VALUES (?, ?, ?, ?, ?)
     `
 
-    db.run(insertSql, [userId, date, time, description, rainAlert], function (err) {
-      if (err) {
-        console.error('Erro ao criar agendamento:', err)
-        return res.status(500).json({ message: 'Erro ao criar agendamento' })
-      }
+    db.run(
+      insertSql,
+      [userId, date, time, description, rainAlert],
+      function (err) {
+        if (err) {
+          console.error('Erro ao criar agendamento:', err)
+          return res.status(500).json({ message: 'Erro ao criar agendamento' })
+        }
 
-      return res.status(201).json({
-        message: rainAlert
-          ? 'Agendamento criado com sucesso. Atenção: há previsão de chuva no dia.'
-          : 'Agendamento criado com sucesso',
-        id: this.lastID,
-        rainAlert: !!rainAlert
-      })
-    })
+        return res.status(201).json({
+          message: rainAlert
+            ? 'Agendamento criado com sucesso. Atenção: há previsão de chuva no dia.'
+            : 'Agendamento criado com sucesso',
+          id: this.lastID,
+          rainAlert: !!rainAlert
+        })
+      }
+    )
   })
 })
 
@@ -101,7 +106,7 @@ router.get('/', authMiddleware, (req, res) => {
 
   db.all(sql, params, (err, rows) => {
     if (err) {
-      console.error('Erro real do SQLite:', err)
+      console.error('Erro ao buscar agendamentos:', err)
       return res.status(500).json({ message: 'Erro ao buscar agendamentos' })
     }
 
