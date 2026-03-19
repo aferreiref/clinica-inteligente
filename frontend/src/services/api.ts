@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'https://clinica-backend-gbtg.onrender.com'
+  baseURL: 'https://clinica-backend-gbtr.onrender.com'
 })
 
 api.interceptors.request.use((config) => {
